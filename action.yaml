@@ -1,0 +1,25 @@
+---
+name:        "CalVer"
+description: "Opinionated CalVer versioning"
+branding:
+  color: "white"
+  icon:  "calendar"
+inputs:
+  layout:
+    default: 'vYY.0M.MICRO'
+  token:
+    description: "GitHub token (use {{ github.token }})"
+    required:    true
+outputs:
+  prev_version:
+    description: "previous version"
+  next_version:
+    description: "next version"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/mikluko/action-calver:v24.11.0
+  args:
+    - "--layout=${{ inputs.layout }}"
+  env:
+    GH_TOKEN: ${{ inputs.token }}

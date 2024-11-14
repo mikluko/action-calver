@@ -1,0 +1,5 @@
+.*
+!.dockerignore
+!.gitattributes
+!.github
+!.gitignore
