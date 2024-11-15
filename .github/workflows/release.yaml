@@ -16,16 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-#      - name: Generate Calendar Version
-#        id: calver
-#        uses: mikluko/action-calver@v24.11.0
-#        with:
-#          layout: 'vYY.0M.MICRO'
-#          token: ${{ github.token }}
-
-      - id: calver
-        run: |
-             echo "next_version=v24.11.0" | tee -a $GITHUB_OUTPUT
+      - name: Generate Calendar Version
+        id:   calver
+        uses: mikluko/action-calver@v24.11.0
+        with:
+          layout: 'vYY.0M.MICRO'
+          token:  ${{ github.token }}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
