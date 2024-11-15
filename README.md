@@ -1,6 +1,3 @@
-Here is the updated `README.md` file:
-
-```markdown
 # CalVer GitHub Action
 
 ## Overview
@@ -34,7 +31,7 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Generate CalVer Version
+      - name: Generate Calendar Version
         id: calver
         uses: mikluko/action-calver@v24.11.1
         with:
@@ -47,15 +44,6 @@ jobs:
         run: gh release create "${{ steps.calver.outputs.next_version }}" --title "${{ steps.calver.outputs.next_version }}" --generate-notes
 ```
 
-## Example
-
-Given the following inputs:
-
-- `layout`: `'vYY.0M.MICRO'`
-
-If the current date is October 2023, the generated version might be `` for the initial version, `` for the second, and so on.
-
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
-```
