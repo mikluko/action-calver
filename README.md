@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate CalVer Version
         id: calver
-        uses: mikluko/action-calver@v24.11.0
+        uses: mikluko/action-calver@v24.11.1
         with:
           layout: 'vYY.0M.MICRO'
           token: ${{ github.token }}
