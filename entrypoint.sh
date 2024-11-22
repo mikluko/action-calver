@@ -2,32 +2,19 @@
 
 set -euo pipefail
 
-layout="vYY.0M.MICRO"
+PREV="${PREV:-${NEXT:-}}"
+NEXT="${NEXT:-}"
+MOD="${MOD:-}"
 
-PARSED_OPTIONS=$(getopt -o l: --long layout: -- "$@")
-eval set -- "$PARSED_OPTIONS"
+if [[ -n "${GITHUB_ACTIONS:-}" ]]; then git config --global --add safe.directory /github/workspace; fi
 
-while true; do
-  case "$1" in
-  -l | --layout)
-    layout="$2"
-    shift 2
-    ;;
-  --)
-    shift
-    break
-    ;;
-  *)
-    echo "Usage: cmd [-l layout] [--layout layout]"
-    exit 1
-    ;;
-  esac
-done
+prev_version=$(gh release list --json tagName | jq -r '.[].tagName' | calver --layout "${PREV}" || calver --layout "${PREV}")
 
-git config --global --add safe.directory /github/workspace
-
-prev_version=$(gh release list --json tagName | jq -r '.[].tagName' | calver --layout "${layout}" || calver --layout "${layout}")
-next_version=$(echo "$prev_version" | calver --layout "${layout}" --next)
+if [[ -z $MOD ]]; then
+  next_version=$(echo "$prev_version" | calver --layout "${NEXT}" --next)
+else
+  next_version=$(echo "$prev_version" | calver --layout "${NEXT}" --next --modifier "$MOD")
+fi
 
 cat <<EOF | tee "${GITHUB_OUTPUT:-/dev/null}"
 prev_version=${prev_version}

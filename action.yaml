@@ -5,8 +5,15 @@ branding:
   color: "white"
   icon:  "calendar"
 inputs:
-  layout:
-    default: 'vYY.0M.MICRO'
+  previous:
+    description: "Previous version layout, same as next if not provided"
+    required:    false
+  next:
+    description: "Next version layout"
+    required:    true
+  modifier:
+    description: "Next version modifier. If provided, MODIFIER pattern must be present in next version layout"
+    required:    false
   token:
     description: "GitHub token (use {{ github.token }})"
     required:    true
@@ -18,8 +25,9 @@ outputs:
 
 runs:
   using: docker
-  image: docker://ghcr.io/mikluko/action-calver:v24.11.2
-  args:
-    - "--layout=${{ inputs.layout }}"
+  image: docker://ghcr.io/mikluko/action-calver:v24.11.1
   env:
+    PREV:     ${{ inputs.previous }}
+    NEXT:     ${{ inputs.next }}
+    MOD:      ${{ inputs.modifier }}
     GH_TOKEN: ${{ inputs.token }}
