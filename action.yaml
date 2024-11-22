@@ -17,7 +17,7 @@ outputs:
 
 runs:
   using: docker
-  image: docker://ghcr.io/mikluko/action-calver:v24.11.3
+  image: docker://ghcr.io/mikluko/action-calver:v24.11.4
   args:
     - ${{ inputs.modifier }}
   env:
