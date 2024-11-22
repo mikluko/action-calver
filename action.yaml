@@ -25,7 +25,7 @@ outputs:
 
 runs:
   using: docker
-  image: docker://ghcr.io/mikluko/action-calver:v24.11.1
+  image: docker://ghcr.io/mikluko/action-calver:v24.11.3
   env:
     PREV:     ${{ inputs.previous }}
     NEXT:     ${{ inputs.next }}

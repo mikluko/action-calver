@@ -33,7 +33,7 @@ jobs:
 
       - name: Generate Calendar Version
         id: calver
-        uses: mikluko/action-calver@v24.11.2
+        uses: mikluko/action-calver@v24.11.3
         with:
           layout: 'vYY.0M.MICRO'
           token: ${{ github.token }}
