@@ -5,29 +5,20 @@ branding:
   color: "white"
   icon:  "calendar"
 inputs:
-  previous:
-    description: "Previous version layout, same as next if not provided"
-    required:    false
-  next:
-    description: "Next version layout"
-    required:    true
   modifier:
-    description: "Next version modifier. If provided, MODIFIER pattern must be present in next version layout"
+    description: "Modifier to add to the version"
     required:    false
   token:
     description: "GitHub token (use {{ github.token }})"
     required:    true
 outputs:
-  prev_version:
-    description: "previous version"
-  next_version:
-    description: "next version"
+  version:
+    description: "version"
 
 runs:
   using: docker
   image: docker://ghcr.io/mikluko/action-calver:v24.11.3
+  args:
+    - ${{ inputs.modifier }}
   env:
-    PREV:     ${{ inputs.previous }}
-    NEXT:     ${{ inputs.next }}
-    MOD:      ${{ inputs.modifier }}
     GH_TOKEN: ${{ inputs.token }}

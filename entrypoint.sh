@@ -2,21 +2,15 @@
 
 set -euo pipefail
 
-PREV="${PREV:-${NEXT:-}}"
-NEXT="${NEXT:-}"
-MOD="${MOD:-}"
+layout=vYY.0M.MICRO-MODIFIER
+modifier="${1:-}"
 
 if [[ -n "${GITHUB_ACTIONS:-}" ]]; then git config --global --add safe.directory /github/workspace; fi
 
-prev_version=$(gh release list --json tagName | jq -r '.[].tagName' | calver --layout "${PREV}" || calver --layout "${PREV}")
+version=$(gh release list --json tagName | jq -r '.[].tagName' | calver --trim-suffix --layout=$layout --next --modifier=$modifier 2>/dev/null || true)
 
-if [[ -z $MOD ]]; then
-  next_version=$(echo "$prev_version" | calver --layout "${NEXT}" --next)
-else
-  next_version=$(echo "$prev_version" | calver --layout "${NEXT}" --next --modifier "$MOD")
-fi
+[[ -z "${version}" ]] && version=$(calver --layout=$layout | calver --next --layout=$layout --modifier=$modifier --trim-suffix)
 
 cat <<EOF | tee "${GITHUB_OUTPUT:-/dev/null}"
-prev_version=${prev_version}
-next_version=${next_version}
+version=${version}
 EOF
