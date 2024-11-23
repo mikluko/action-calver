@@ -21,7 +21,7 @@ push)
     ;;
   esac
   ;;
-pull_request)
+pull_request | pull_request_target)
   series="pr$(jq '.pull_request.number' "$GITHUB_EVENT_PATH")"
   modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
   ;;

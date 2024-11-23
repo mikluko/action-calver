@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - action.yaml
       - README.md
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - synchronize
@@ -14,6 +14,10 @@ on:
     paths-ignore:
       - action.yaml
       - README.md
+
+concurrency:
+  group:              ${{ github.workflow }}/${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -32,18 +36,6 @@ jobs:
           token:    ${{ github.token }}
           modifier: pr${{ github.event.pull_request.number }}.${{ github.run_number }}
 
-      - name: Generate files from templates
-        run:  for file in templates/*; do envsubst '${VERSION}' < $file > ${file#templates/}; done
-        env:
-          VERSION: ${{ steps.calver.outputs.version || 'unspecified' }}
-
-      - uses: actions-js/push@master
-        with:
-          github_token: ${{ github.token }}
-          branch:       ${{ github.head_ref }}
-          rebase:       true
-          message:      "chore: generate files for ${{ steps.calver.outputs.version }} release"
-
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -56,6 +48,17 @@ jobs:
         with:
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ steps.calver.outputs.version }}
+
+      - name: Generate files from templates
+        run:  for file in templates/*; do envsubst '${VERSION}' < $file > ${file#templates/}; done
+        env:
+          VERSION: ${{ steps.calver.outputs.version || 'unspecified' }}
+
+      - uses: actions-js/push@master
+        with:
+          github_token: ${{ github.token }}
+          branch:       ${{ github.head_ref }}
+          message:      "chore: generate files for ${{ steps.calver.outputs.version }} release"
 
       - name: Create GitHub Release
         env:
