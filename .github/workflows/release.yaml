@@ -5,6 +5,18 @@ on:
     paths-ignore:
       - action.yaml
       - README.md
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths-ignore:
+      - action.yaml
+      - README.md
+
+concurrency:
+  group:              ${{ github.workflow }}/${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -15,12 +27,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
 
       - name: Generate Calendar Version
         id:   calver
-        uses: mikluko/action-calver@v24.11.4
+        uses: mikluko/action-calver@v24.11.6-pr1.34
         with:
-          token:  ${{ github.token }}
+          token:    ${{ github.token }}
+          modifier: pr${{ github.event.pull_request.number }}.${{ github.run_number }}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -33,20 +48,24 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ steps.calver.outputs.next_version }}
+          tags: ghcr.io/${{ github.repository }}:${{ steps.calver.outputs.version }}
 
-      - name: Update version in files
-        run:  |
-              git config user.name "GitHub Actions [Bot]"
-              git config user.email "github-actions[bot]@users.noreply.github.com"
-              sed -i "s/v[0-9]\+.[0-9]\+.[0-9]\+/${{ steps.calver.outputs.next_version }}/g" action.yaml
-              git add action.yaml 
-              sed -i "s/v[0-9]\+.[0-9]\+.[0-9]\+/${{ steps.calver.outputs.next_version }}/g" README.md
-              git add README.md
-              git commit -m "Release ${{ steps.calver.outputs.next_version }}" --allow-empty
-              git push
+      - name: Generate files from templates
+        run:  for file in templates/*; do envsubst '${VERSION}' < $file > ${file#templates/}; done
+        env:
+          VERSION: ${{ steps.calver.outputs.version || 'unspecified' }}
+
+      - uses: actions-js/push@master
+        with:
+          github_token: ${{ github.token }}
+          branch:       ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
+          message:      "chore: generate templated files for ${{ steps.calver.outputs.version }} release"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run:  gh release create "${{ steps.calver.outputs.next_version }}" --title "${{ steps.calver.outputs.next_version }}" --generate-notes
+        run:  |
+              gh release create ${{ steps.calver.outputs.version }} \
+                --title ${{ steps.calver.outputs.version }} \
+                --target ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }} \
+                --generate-notes
