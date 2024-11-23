@@ -59,14 +59,13 @@ jobs:
         with:
           github_token: ${{ github.token }}
           branch:       ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
-          tags:         ${{ steps.calver.outputs.version }}
-          message:      "Release ${{ steps.calver.outputs.version }}"
+          message:      "chore: generate templated files for ${{ steps.calver.outputs.version }} release"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run:  |
-              gh release create "${{ steps.calver.outputs.version }}" \
-                --title "${{ steps.calver.outputs.version }}" \
-                --target "${{ steps.calver.outputs.version }}" \
+              gh release create ${{ steps.calver.outputs.version }} \
+                --title ${{ steps.calver.outputs.version }} \
+                --target ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }} \
                 --generate-notes
