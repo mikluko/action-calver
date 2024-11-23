@@ -32,6 +32,17 @@ jobs:
           token:    ${{ github.token }}
           modifier: ${{ github.run_number }}
 
+      - name: Generate files from templates
+        run:  for file in templates/*; do envsubst '${VERSION}' < $file > ${file#templates/}; done
+        env:
+          VERSION: ${{ steps.calver.outputs.version || 'unspecified' }}
+
+      - uses: actions-js/push@master
+        with:
+          github_token: ${{ github.token }}
+          branch:       ${{ github.head_ref }}
+          message:      "chore: generate files for ${{ steps.calver.outputs.version }} release"
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -44,17 +55,6 @@ jobs:
         with:
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ steps.calver.outputs.version }}
-
-      - name: Generate files from templates
-        run:  for file in templates/*; do envsubst '${VERSION}' < $file > ${file#templates/}; done
-        env:
-          VERSION: ${{ steps.calver.outputs.version || 'unspecified' }}
-
-      - uses: actions-js/push@master
-        with:
-          github_token: ${{ github.token }}
-          branch:       ${{ github.head_ref }}
-          message:      "chore: generate files for ${{ steps.calver.outputs.version }} release"
 
       - name: Create GitHub Release
         env:
