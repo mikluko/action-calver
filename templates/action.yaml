@@ -1,0 +1,21 @@
+---
+name:        "CalVer"
+description: "Opinionated CalVer versioning"
+branding:
+  color: "white"
+  icon:  "calendar"
+inputs:
+  token:
+    description: "GitHub token (use {{ github.token }})"
+    required:    true
+outputs:
+  series:
+    description: "series"
+  version:
+    description: "version"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/mikluko/action-calver:${VERSION}
+  env:
+    GH_TOKEN: ${{ inputs.token }}

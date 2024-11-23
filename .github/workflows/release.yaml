@@ -20,7 +20,8 @@ jobs:
         id:   calver
         uses: mikluko/action-calver@v24.11.4
         with:
-          token:  ${{ github.token }}
+          token:    ${{ github.token }}
+          modifier: ${{ github.run_number }}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -33,20 +34,21 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ steps.calver.outputs.next_version }}
+          tags: ghcr.io/${{ github.repository }}:${{ steps.calver.outputs.version }}
 
-      - name: Update version in files
+      - name: Generate files from templates
+        run:  for file in templates/*; do envsubst '${VERSION}' < $file > ${file#templates/}; done
+        env:
+          VERSION: ${{ steps.calver.outputs.version || 'unspecified' }}
+
+      - name: Commit and push changes
         run:  |
               git config user.name "GitHub Actions [Bot]"
               git config user.email "github-actions[bot]@users.noreply.github.com"
-              sed -i "s/v[0-9]\+.[0-9]\+.[0-9]\+/${{ steps.calver.outputs.next_version }}/g" action.yaml
-              git add action.yaml 
-              sed -i "s/v[0-9]\+.[0-9]\+.[0-9]\+/${{ steps.calver.outputs.next_version }}/g" README.md
-              git add README.md
-              git commit -m "Release ${{ steps.calver.outputs.next_version }}" --allow-empty
+              git commit -Am "Release ${{ steps.calver.outputs.next_version }}" --allow-empty
               git push
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run:  gh release create "${{ steps.calver.outputs.next_version }}" --title "${{ steps.calver.outputs.next_version }}" --generate-notes
+        run:  gh release create "${{ steps.calver.outputs.version }}" --title "${{ steps.calver.outputs.version }}" --generate-notes
