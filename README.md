@@ -5,15 +5,6 @@
 The **CalVer** GitHub Action provides opinionated Calendar Versioning (CalVer) for your projects. It
 generates version numbers based on the current date and an optional prefix and suffix.
 
-## Inputs
-
-- **`layout`**: The version layout. Default: `'vYY.0M.MICRO'`.
-
-## Outputs
-
-- **`prev_version`**: The previous version.
-- **`next_version`**: The next version.
-
 ## Usage
 
 To use this action in your workflow, add the following step:
@@ -25,17 +16,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
       - name: Generate Calendar Version
         id: calver
-        uses: mikluko/action-calver@v24.11.4
+        uses: mikluko/action-calver@v24.11.5-pr1.32
         with:
-          layout: 'vYY.0M.MICRO'
           token: ${{ github.token }}
 
       - name: Create GitHub Release

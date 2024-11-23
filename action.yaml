@@ -5,20 +5,17 @@ branding:
   color: "white"
   icon:  "calendar"
 inputs:
-  modifier:
-    description: "Modifier to add to the version"
-    required:    false
   token:
     description: "GitHub token (use {{ github.token }})"
     required:    true
 outputs:
+  series:
+    description: "series"
   version:
     description: "version"
 
 runs:
   using: docker
-  image: docker://ghcr.io/mikluko/action-calver:v24.11.4
-  args:
-    - ${{ inputs.modifier }}
+  image: docker://ghcr.io/mikluko/action-calver:v24.11.5-pr1.32
   env:
     GH_TOKEN: ${{ inputs.token }}
