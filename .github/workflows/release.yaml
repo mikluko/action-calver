@@ -64,7 +64,8 @@ jobs:
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run:  gh release create "${{ steps.calver.outputs.version }}" \
-              --target "${{ github.sha }}" \
-              --title "${{ steps.calver.outputs.version }}" \
-              --generate-notes
+        run:  |
+              gh release create "${{ steps.calver.outputs.version }}" \
+                --target "${{ github.sha }}" \
+                --title "${{ steps.calver.outputs.version }}" \
+                --generate-notes
