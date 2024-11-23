@@ -50,12 +50,10 @@ jobs:
         env:
           VERSION: ${{ steps.calver.outputs.version || 'unspecified' }}
 
-      - name: Commit and push changes
-        run:  |
-              git config user.name "GitHub Actions [Bot]"
-              git config user.email "github-actions[bot]@users.noreply.github.com"
-              git commit -am "Release ${{ steps.calver.outputs.next_version }}" --allow-empty
-              git push
+      - uses: actions-js/push@master
+        with:
+          github_token: ${{ github.token }}
+          message:      "chore: generate files for ${{ steps.calver.outputs.version }} release"
 
       - name: Create GitHub Release
         env:
