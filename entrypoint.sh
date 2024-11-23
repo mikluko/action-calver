@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+
 layout=vYY.0M.MICRO-MODIFIER
 modifier=
 
@@ -32,6 +33,8 @@ EOF
   exit 1
   ;;
 esac
+
+git config --global --add safe.directory /github/workspace
 
 version=$(gh release list --json tagName | jq -r '.[].tagName' | calver --trim-suffix --layout=$layout --next --modifier="$modifier" 2>/dev/null || true)
 
