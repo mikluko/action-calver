@@ -33,10 +33,9 @@ jobs:
 
       - name: Generate Calendar Version
         id:   calver
-        uses: mikluko/action-calver@v24.11.4
+        uses: mikluko/action-calver@v24.11.5-pr1.32
         with:
-          token:    ${{ github.token }}
-          modifier: pr${{ github.event.pull_request.number }}.${{ github.run_number }}
+          token: ${{ github.token }}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
