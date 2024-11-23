@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - action.yaml
       - README.md
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - synchronize
@@ -28,6 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
 
       - name: Generate Calendar Version
         id:   calver
@@ -57,7 +59,7 @@ jobs:
       - uses: actions-js/push@master
         with:
           github_token: ${{ github.token }}
-          branch:       ${{ github.head_ref }}
+          branch:       ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
           message:      "chore: generate files for ${{ steps.calver.outputs.version }} release"
 
       - name: Create GitHub Release
