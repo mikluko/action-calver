@@ -13,17 +13,23 @@ push)
     ;;
   refs/heads/develop)
     series=beta
-    modifier=beta.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+    modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
     ;;
   *)
     series=alpha
-    modifier=alpha.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+    modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
     ;;
   esac
   ;;
 pull_request)
   series="pr$(jq '.pull_request.number' "$GITHUB_EVENT_PATH")"
   modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+  ;;
+*)
+  cat <<EOF >&2
+::error::Unsupported event name: '$GITHUB_EVENT_NAME'
+EOF
+  exit 1
   ;;
 esac
 
