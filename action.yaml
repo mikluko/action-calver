@@ -5,9 +5,9 @@ branding:
   color: "white"
   icon:  "calendar"
 inputs:
-  token:
-    description: "GitHub token (use {{ github.token }})"
-    required:    true
+  github_token:
+    description: "GitHub token to use"
+    required:    false
 outputs:
   series:
     description: "series"
@@ -16,6 +16,6 @@ outputs:
 
 runs:
   using: docker
-  image: docker://ghcr.io/mikluko/action-calver:v24.11.7
+  image: docker://ghcr.io/mikluko/action-calver:v24.11.8-pr3.46.a828f07
   env:
-    GH_TOKEN: ${{ inputs.token }}
+    GH_TOKEN: ${{ inputs.token || github.token }}
