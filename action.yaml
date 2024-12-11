@@ -16,6 +16,6 @@ outputs:
 
 runs:
   using: docker
-  image: docker://ghcr.io/mikluko/action-calver:v24.12.8-pr4.48.ae495dc
+  image: docker://ghcr.io/mikluko/action-calver:v24.12.8
   env:
     GH_TOKEN: ${{ inputs.token }}
