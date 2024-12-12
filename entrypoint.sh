@@ -6,7 +6,7 @@ layout=vYY.0M.MICRO-MODIFIER
 modifier=
 
 case "$GITHUB_EVENT_NAME" in
-push)
+push | workflow_dispatch)
   case "$GITHUB_REF" in
   refs/heads/main | refs/heads/master)
     series=stable
