@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-layout=vYY.0M.MICRO-MODIFIER
-modifier=
+declare layoutPrev=vYY.0M.MICRO
+declare layoutNext=$layoutPrev
+declare modifier=
 
 case "$GITHUB_EVENT_NAME" in
 push | workflow_dispatch)
@@ -14,16 +15,19 @@ push | workflow_dispatch)
   refs/heads/develop)
     series=beta
     modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+    layoutNext+=-MODIFIER
     ;;
   *)
     series=alpha
     modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+    layoutNext+=-MODIFIER
     ;;
   esac
   ;;
 pull_request)
   series="pr$(jq '.pull_request.number' "$GITHUB_EVENT_PATH")"
   modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+  layoutNext+=-MODIFIER
   ;;
 *)
   cat <<EOF >&2
@@ -37,11 +41,11 @@ git config --global --add safe.directory /github/workspace
 
 historical=$(gh release list --json tagName | jq -r '.[].tagName')
 
-declare previous
-[[ -n "${historical}" ]] && previous=$(echo "$historical" | calver --layout=$layout 2>/dev/null || calver --layout=$layout)
-[[ -z "${previous}" ]] && previous=$(calver --layout=$layout)
+declare prev
+[[ -n "${historical}" ]] && prev=$(echo "$historical" | calver --layout=$layoutPrev 2>/dev/null || calver --layout=$layoutPrev)
+[[ -z "${prev}" ]] && prev=$(calver --layout=$layoutPrev)
 
-next=$(echo "$previous" | calver --next --layout=$layout --modifier="$modifier" --trim-suffix)
+next=$(echo "$prev" | calver --next --layout=$layoutNext --modifier="$modifier" --trim-suffix)
 
 cat <<EOF | tee "${GITHUB_OUTPUT:-/dev/null}"
 series=${series}
