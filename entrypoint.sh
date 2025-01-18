@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-declare layoutPrev=vYY.0M.MICRO
+declare layoutPrev=vYY.MM.MICRO
 declare layoutNext=$layoutPrev
 declare modifier=
 
