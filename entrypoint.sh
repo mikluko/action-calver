@@ -42,8 +42,8 @@ git config --global --add safe.directory /github/workspace
 historical=$(gh release list --json tagName | jq -r '.[].tagName')
 
 declare prev
+prev=$(calver --layout=$layoutNext)
 [[ -n "${historical}" ]] && prev=$(echo "$historical" | calver --layout=$layoutPrev 2>/dev/null || calver --layout=$layoutPrev)
-[[ -z "${prev}" ]] && prev=$(calver --layout=$layoutPrev)
 
 next=$(echo "$prev" | calver --next --layout=$layoutNext --modifier="$modifier" --trim-suffix)
 
