@@ -14,19 +14,19 @@ push | workflow_dispatch)
     ;;
   refs/heads/develop)
     series=beta
-    modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+    modifier=${series}.${GITHUB_RUN_NUMBER}
     layoutNext+=-MODIFIER
     ;;
   *)
     series=alpha
-    modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+    modifier=${series}.${GITHUB_RUN_NUMBER}
     layoutNext+=-MODIFIER
     ;;
   esac
   ;;
 pull_request)
   series="pr$(jq '.pull_request.number' "$GITHUB_EVENT_PATH")"
-  modifier=${series}.${GITHUB_RUN_NUMBER}.${GITHUB_SHA:0:7}
+  modifier=${series}.${GITHUB_RUN_NUMBER}
   layoutNext+=-MODIFIER
   ;;
 *)
