@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Generate Calendar Version
         id: calver
-        uses: mikluko/action-calver@v25.1.11
+        uses: mikluko/action-calver@v25.3.11
         with:
           token: ${{ github.token }}
 
