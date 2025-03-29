@@ -45,11 +45,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Build container
         uses: docker/build-push-action@v6
         with:
-          push: true
-          tags: ghcr.io/${{ github.repository }}:${{ steps.calver.outputs.version }}
+          push:      true
+          tags:      ghcr.io/${{ github.repository }}:${{ steps.calver.outputs.version }}
+          platforms: linux/amd64,linux/arm64
 
       - name: Generate files from templates
         run:  for file in templates/*; do envsubst '${VERSION}' < $file > ${file#templates/}; done
